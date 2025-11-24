@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Deploy - Upload dan Deploy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, #2c3e50, #4a6491);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus, input[type="file"]:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        .upload-area {
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            background-color: #f8fafc;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .upload-area:hover {
+            background-color: #e8f4fc;
+        }
+        
+        .upload-area i {
+            font-size: 48px;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        
+        .upload-area p {
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: linear-gradient(to right, #3498db, #2c3e50);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f1f8ff;
+            border-radius: 8px;
+            border-left: 5px solid #3498db;
+            display: none;
+        }
+        
+        .result h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .url-box {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            word-break: break-all;
+            font-family: monospace;
+            margin-bottom: 15px;
+        }
+        
+        .copy-btn {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+        
+        .copy-btn:hover {
+            background-color: #27ae60;
+        }
+        
+        .info-box {
+            background-color: #fff8e1;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .info-box h4 {
+            color: #ff9800;
+            margin-bottom: 10px;
+        }
+        
+        .steps {
+            margin-top: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            padding: 20px;
+            background-color: #f8fafc;
+            border-radius: 10px;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 50%;
+            line-height: 40px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        @media (max-width: 600px) {
+            .content {
+                padding: 20px;
+            }
+            
+            header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .steps {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Web Deploy</h1>
+            <p>Unggah file HTML Anda dan dapatkan URL deploy kustom</p>
+        </header>
+        
+        <div class="content">
+            <form id="deployForm">
+                <div class="form-group">
+                    <label for="projectName">Nama Proyek</label>
+                    <input type="text" id="projectName" placeholder="Masukkan nama proyek Anda" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Unggah File index.html</label>
+                    <div class="upload-area" id="uploadArea">
+                        <i>📁</i>
+                        <p>Klik untuk memilih file atau seret file ke sini</p>
+                        <p class="small">Hanya file HTML yang diperbolehkan</p>
+                    </div>
+                    <input type="file" id="fileInput" accept=".html" style="display: none;" required>
+                </div>
+                
+                <button type="submit" class="btn">Deploy Sekarang</button>
+            </form>
+            
+            <div class="result" id="result">
+                <h3>Deploy Berhasil!</h3>
+                <p>Website Anda telah berhasil dideploy. Akses melalui URL berikut:</p>
+                <div class="url-box" id="urlResult"></div>
+                <button class="copy-btn" id="copyBtn">Salin URL</button>
+            </div>
+            
+            <div class="info-box">
+                <h4>Informasi Penting</h4>
+                <p>Pastikan file utama Anda bernama <strong>index.html</strong>. File lain (CSS, JS, gambar) akan diunggah bersama file HTML jika diperlukan.</p>
+            </div>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Masukkan Nama</h3>
+                    <p>Berikan nama unik untuk proyek Anda</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Unggah File</h3>
+                    <p>Pilih file index.html Anda</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Deploy</h3>
+                    <p>Dapatkan URL untuk website Anda</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2023 Web Deploy - Layanan deploy website gratis</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('fileInput');
+            const uploadArea = document.getElementById('uploadArea');
+            const deployForm = document.getElementById('deployForm');
+            const resultDiv = document.getElementById('result');
+            const urlResult = document.getElementById('urlResult');
+            const copyBtn = document.getElementById('copyBtn');
+            
+            // Handle upload area click
+            uploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            // Handle drag and drop
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.style.backgroundColor = '#e1f5fe';
+            });
+            
+            uploadArea.addEventListener('dragleave', function() {
+                uploadArea.style.backgroundColor = '#f8fafc';
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.style.backgroundColor = '#f8fafc';
+                
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    updateUploadAreaText();
+                }
+            });
+            
+            // Update upload area text when file is selected
+            fileInput.addEventListener('change', updateUploadAreaText);
+            
+            function updateUploadAreaText() {
+                if (fileInput.files.length > 0) {
+                    const fileName = fileInput.files[0].name;
+                    uploadArea.innerHTML = `<i>📄</i><p>File dipilih: <strong>${fileName}</strong></p>`;
+                }
+            }
+            
+            // Handle form submission
+            deployForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const projectName = document.getElementById('projectName').value.trim();
+                const fileName = fileInput.files[0] ? fileInput.files[0].name : '';
+                
+                if (!projectName) {
+                    alert('Silakan masukkan nama proyek!');
+                    return;
+                }
+                
+                if (!fileName) {
+                    alert('Silakan pilih file HTML!');
+                    return;
+                }
+                
+                // Generate URL sesuai format yang diminta
+                const baseUrl = "https://bgblodx.github.io/Knock-1/";
+                const formattedName = projectName.toLowerCase().replace(/\s+/g, '-');
+                const deployUrl = `${baseUrl}${formattedName}/`;
+                
+                // Tampilkan hasil
+                urlResult.textContent = deployUrl;
+                resultDiv.style.display = 'block';
+                
+                // Scroll ke hasil
+                resultDiv.scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Handle copy button
+            copyBtn.addEventListener('click', function() {
+                const textToCopy = urlResult.textContent;
+                
+                navigator.clipboard.writeText(textToCopy).then(function() {
+                    copyBtn.textContent = 'Tersalin!';
+                    setTimeout(function() {
+                        copyBtn.textContent = 'Salin URL';
+                    }, 2000);
+                }).catch(function(err) {
+                    console.error('Gagal menyalin teks: ', err);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
